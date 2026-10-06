@@ -1,0 +1,922 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WildWorld 3D Zoo</title>
+
+    <!-- A-FRAME 1.8.0 -->
+    <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(0,0,0,.75);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            max-width: 280px;
+        }
+
+        #info h2 {
+            margin: 0 0 7px;
+        }
+
+        #info p {
+            margin: 4px 0;
+            font-size: 13px;
+        }
+
+        #animalInfo {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            background: white;
+            color: #222;
+            padding: 18px 25px;
+            border-radius: 15px;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,.3);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="info">
+    <h2>🦁 WildWorld Zoo</h2>
+    <p>Welcome to the 3D zoo!</p>
+    <p>🖱️ Look around with your mouse</p>
+    <p>⌨️ Use W A S D to walk</p>
+    <p>👆 Click an animal to learn about it</p>
+</div>
+
+<div id="animalInfo">
+    <h3 id="animalName"></h3>
+    <p id="animalDescription"></p>
+</div>
+
+
+<a-scene
+    background="color: #87CEEB"
+    fog="type: exponential; color: #bde7ff; density: 0.015"
+    shadow="type: pcfsoft">
+
+    <!-- ========================= -->
+    <!-- ASSETS -->
+    <!-- ========================= -->
+
+    <a-assets>
+
+        <!-- Ground textures -->
+        <img id="grass"
+             src="https://cdn.aframe.io/a-painter/images/floor.jpg">
+
+    </a-assets>
+
+
+    <!-- ========================= -->
+    <!-- LIGHTING -->
+    <!-- ========================= -->
+
+    <a-light
+        type="ambient"
+        color="#ffffff"
+        intensity="0.7">
+    </a-light>
+
+    <a-light
+        type="directional"
+        position="-20 30 10"
+        intensity="1.2"
+        cast-shadow="true">
+    </a-light>
+
+
+    <!-- ========================= -->
+    <!-- GROUND -->
+    <!-- ========================= -->
+
+    <a-plane
+        position="0 0 0"
+        rotation="-90 0 0"
+        width="100"
+        height="100"
+        color="#65a84a"
+        shadow="receive: true">
+    </a-plane>
+
+
+    <!-- ========================= -->
+    <!-- MAIN PATH -->
+    <!-- ========================= -->
+
+    <a-plane
+        position="0 0.015 0"
+        rotation="-90 0 0"
+        width="8"
+        height="100"
+        color="#c9ad83">
+    </a-plane>
+
+    <a-plane
+        position="0 0.02 0"
+        rotation="-90 0 0"
+        width="100"
+        height="7"
+        color="#c9ad83">
+    </a-plane>
+
+
+    <!-- ========================= -->
+    <!-- ZOO ENTRANCE -->
+    <!-- ========================= -->
+
+    <a-box
+        position="0 3 -43"
+        width="20"
+        height="6"
+        depth="1"
+        color="#5b3924">
+    </a-box>
+
+    <a-text
+        value="WILDWORLD ZOO"
+        position="0 3 -42.4"
+        align="center"
+        width="15"
+        color="#FFD700">
+    </a-text>
+
+
+    <!-- ========================= -->
+    <!-- TREES -->
+    <!-- ========================= -->
+
+    <!-- Tree 1 -->
+    <a-cylinder
+        position="-25 3 -20"
+        radius="1"
+        height="6"
+        color="#6b4226">
+    </a-cylinder>
+
+    <a-sphere
+        position="-25 7 -20"
+        radius="4"
+        color="#238b45">
+    </a-sphere>
+
+    <!-- Tree 2 -->
+    <a-cylinder
+        position="25 3 -20"
+        radius="1"
+        height="6"
+        color="#6b4226">
+    </a-cylinder>
+
+    <a-sphere
+        position="25 7 -20"
+        radius="4"
+        color="#238b45">
+    </a-sphere>
+
+    <!-- Tree 3 -->
+    <a-cylinder
+        position="-25 3 20"
+        radius="1"
+        height="6"
+        color="#6b4226">
+    </a-cylinder>
+
+    <a-sphere
+        position="-25 7 20"
+        radius="4"
+        color="#238b45">
+    </a-sphere>
+
+    <!-- Tree 4 -->
+    <a-cylinder
+        position="25 3 20"
+        radius="1"
+        height="6"
+        color="#6b4226">
+    </a-cylinder>
+
+    <a-sphere
+        position="25 7 20"
+        radius="4"
+        color="#238b45">
+    </a-sphere>
+
+
+    <!-- ================================================= -->
+    <!-- LION ENCLOSURE -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="LION KINGDOM"
+        position="-15 5 -17"
+        align="center"
+        color="#ffffff"
+        width="8">
+    </a-text>
+
+    <a-box position="-15 0.8 -22" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="-15 0.8 -12" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="-22 0.8 -17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+    <a-box position="-8 0.8 -17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+
+    <!-- Lion body -->
+    <a-entity
+        position="-15 1.5 -17"
+        class="animal"
+        data-name="African Lion"
+        data-description="The lion is a powerful social cat known as the king of beasts.">
+
+        <a-sphere
+            position="0 0 0"
+            radius="1.1"
+            color="#C9822B">
+        </a-sphere>
+
+        <a-sphere
+            position="0 1.2 0"
+            radius=".75"
+            color="#D99A45">
+        </a-sphere>
+
+        <!-- Mane -->
+        <a-torus
+            position="0 1.2 0"
+            rotation="90 0 0"
+            radius=".65"
+            radius-tubular=".2"
+            color="#5b351c">
+        </a-torus>
+
+        <!-- Tail -->
+        <a-cylinder
+            position="1.2 .7 0"
+            rotation="0 0 60"
+            radius=".08"
+            height="2"
+            color="#C9822B">
+        </a-cylinder>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- ELEPHANT ENCLOSURE -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="ELEPHANT VALLEY"
+        position="15 5 -17"
+        align="center"
+        color="white"
+        width="8">
+    </a-text>
+
+    <a-box position="15 .8 -22" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="15 .8 -12" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="22 .8 -17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+    <a-box position="8 .8 -17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+
+    <!-- Elephant -->
+    <a-entity
+        position="15 1.7 -17"
+        class="animal"
+        data-name="Asian Elephant"
+        data-description="Elephants are highly intelligent animals with remarkable memory and social behavior.">
+
+        <a-sphere
+            position="0 0 0"
+            scale="1.7 1.3 1.1"
+            color="#777">
+        </a-sphere>
+
+        <a-sphere
+            position="0 1.3 0"
+            radius=".8"
+            color="#888">
+        </a-sphere>
+
+        <!-- Trunk -->
+        <a-cylinder
+            position="0 0.5 -.8"
+            radius=".25"
+            height="1.7"
+            rotation="20 0 0"
+            color="#888">
+        </a-cylinder>
+
+        <!-- Ears -->
+        <a-sphere
+            position="-.8 1.3 0"
+            scale=".5 .8 .2"
+            color="#777">
+        </a-sphere>
+
+        <a-sphere
+            position=".8 1.3 0"
+            scale=".5 .8 .2"
+            color="#777">
+        </a-sphere>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- GIRAFFE -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="GIRAFFE PLAINS"
+        position="-15 5 17"
+        align="center"
+        color="white"
+        width="8">
+    </a-text>
+
+    <a-box position="-15 .8 12" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="-15 .8 22" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="-22 .8 17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+    <a-box position="-8 .8 17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+
+    <a-entity
+        position="-15 3 17"
+        class="animal"
+        data-name="Giraffe"
+        data-description="Giraffes are the tallest land animals and use their long necks to reach leaves.">
+
+        <a-cylinder
+            position="0 0 0"
+            radius=".7"
+            height="2"
+            color="#d99b3d">
+        </a-cylinder>
+
+        <a-cylinder
+            position="0 2.5 0"
+            radius=".25"
+            height="4"
+            color="#d99b3d">
+        </a-cylinder>
+
+        <a-sphere
+            position="0 4.7 0"
+            radius=".55"
+            color="#d99b3d">
+        </a-sphere>
+
+        <!-- Giraffe spots -->
+        <a-sphere position=".45 3 .2" radius=".15" color="#7b4a20"></a-sphere>
+        <a-sphere position="-.4 2 -.1" radius=".18" color="#7b4a20"></a-sphere>
+        <a-sphere position=".35 1 -.2" radius=".15" color="#7b4a20"></a-sphere>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- ZEBRA -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="ZEBRA LAND"
+        position="15 5 17"
+        align="center"
+        color="white"
+        width="8">
+    </a-text>
+
+    <a-box position="15 .8 12" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="15 .8 22" width="15" height="1.6" depth=".3" color="#555"></a-box>
+    <a-box position="22 .8 17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+    <a-box position="8 .8 17" width=".3" height="1.6" depth="10" color="#555"></a-box>
+
+    <a-entity
+        position="15 1.5 17"
+        class="animal"
+        data-name="Zebra"
+        data-description="Zebras are famous for their unique black-and-white stripe patterns.">
+
+        <a-sphere
+            scale="1.5 .8 .7"
+            color="white">
+        </a-sphere>
+
+        <a-sphere
+            position="0 1 0"
+            radius=".5"
+            color="white">
+        </a-sphere>
+
+        <a-box
+            position="0 1 0"
+            width=".12"
+            height="1"
+            depth=".12"
+            color="black">
+        </a-box>
+
+        <a-box
+            position=".5 .3 .2"
+            width=".15"
+            height="1.3"
+            depth=".15"
+            color="black">
+        </a-box>
+
+        <a-box
+            position="-.5 .3 .2"
+            width=".15"
+            height="1.3"
+            depth=".15"
+            color="black">
+        </a-box>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- SNAKE HOUSE -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="SNAKE HOUSE 🐍"
+        position="-15 4 32"
+        align="center"
+        color="white"
+        width="8">
+    </a-text>
+
+    <a-box
+        position="-15 .8 32"
+        width="15"
+        height="1.6"
+        depth="10"
+        color="#365c30">
+    </a-box>
+
+    <!-- Snake segments -->
+    <a-entity
+        position="-15 2 32"
+        class="animal"
+        data-name="Python"
+        data-description="Pythons are large non-venomous snakes that capture prey by constriction.">
+
+        <a-sphere position="-4 0 0" radius=".4" color="#245c32"></a-sphere>
+        <a-sphere position="-3.3 .1 .2" radius=".42" color="#347a3d"></a-sphere>
+        <a-sphere position="-2.6 0 .3" radius=".43" color="#245c32"></a-sphere>
+        <a-sphere position="-1.9 .1 .1" radius=".42" color="#347a3d"></a-sphere>
+        <a-sphere position="-1.2 0 -.1" radius=".43" color="#245c32"></a-sphere>
+        <a-sphere position="-.5 .1 -.2" radius=".44" color="#347a3d"></a-sphere>
+
+        <a-sphere position=".3 .2 -.2" radius=".5" color="#245c32"></a-sphere>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- MONKEY -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="MONKEY FOREST"
+        position="15 4 32"
+        align="center"
+        color="white"
+        width="8">
+    </a-text>
+
+    <a-box
+        position="15 .8 32"
+        width="15"
+        height="1.6"
+        depth="10"
+        color="#4f7037">
+    </a-box>
+
+    <!-- Monkey -->
+    <a-entity
+        position="15 2 32"
+        class="animal"
+        data-name="Monkey"
+        data-description="Monkeys are intelligent primates known for climbing, communication and playful behavior.">
+
+        <a-sphere
+            radius=".8"
+            color="#75452b">
+        </a-sphere>
+
+        <a-sphere
+            position="0 1"
+            radius=".55"
+            color="#75452b">
+        </a-sphere>
+
+        <a-torus
+            position=".55 1 0"
+            rotation="90 0 0"
+            radius=".25"
+            radius-tubular=".07"
+            color="#75452b">
+        </a-torus>
+
+        <a-torus
+            position="-.55 1 0"
+            rotation="90 0 0"
+            radius=".25"
+            radius-tubular=".07"
+            color="#75452b">
+        </a-torus>
+
+        <!-- Tail -->
+        <a-torus
+            position="0 0 .9"
+            rotation="90 0 0"
+            radius=".8"
+            radius-tubular=".1"
+            color="#75452b">
+        </a-torus>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- CROCODILE LAKE -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="CROCODILE LAKE"
+        position="0 3 40"
+        align="center"
+        color="white"
+        width="9">
+    </a-text>
+
+    <a-cylinder
+        position="0 .1 42"
+        radius="7"
+        height=".2"
+        color="#2d8c9e">
+    </a-cylinder>
+
+    <!-- Crocodile -->
+    <a-entity
+        position="0 1 42"
+        class="animal"
+        data-name="Crocodile"
+        data-description="Crocodiles are powerful reptiles that spend much of their time in water.">
+
+        <a-box
+            width="4"
+            height=".7"
+            depth="1.2"
+            color="#315c35">
+        </a-box>
+
+        <a-box
+            position="2 .3 0"
+            width="2"
+            height=".4"
+            depth=".5"
+            color="#315c35">
+        </a-box>
+
+        <a-sphere
+            position="1.5 .7 -.3"
+            radius=".15"
+            color="yellow">
+        </a-sphere>
+
+        <a-sphere
+            position="1.5 .7 .3"
+            radius=".15"
+            color="yellow">
+        </a-sphere>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- BIRD AVIARY -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="TROPICAL BIRD AVIARY 🦜"
+        position="0 7 25"
+        align="center"
+        color="white"
+        width="10">
+    </a-text>
+
+    <!-- Aviary -->
+    <a-cylinder
+        position="0 4 25"
+        radius="8"
+        height="8"
+        open-ended="true"
+        color="#aaaaaa"
+        opacity=".25"
+        transparent="true">
+    </a-cylinder>
+
+    <!-- Bird 1 -->
+    <a-entity
+        position="-4 5 25"
+        class="animal"
+        data-name="Parrot"
+        data-description="Parrots are colorful intelligent birds capable of mimicking sounds.">
+
+        <a-sphere
+            radius=".5"
+            color="#ef3b2d">
+        </a-sphere>
+
+        <a-sphere
+            position="0 .7 0"
+            radius=".35"
+            color="#21a366">
+        </a-sphere>
+
+        <a-cone
+            position="0 .7 -.35"
+            radius-bottom=".2"
+            height=".5"
+            rotation="90 0 0"
+            color="#f5c542">
+        </a-cone>
+
+    </a-entity>
+
+
+    <!-- Bird 2 -->
+    <a-entity
+        position="4 6 25"
+        class="animal"
+        data-name="Macaw"
+        data-description="Macaws are large colorful parrots native to tropical regions.">
+
+        <a-sphere
+            radius=".5"
+            color="#e53935">
+        </a-sphere>
+
+        <a-sphere
+            position="0 .6 0"
+            radius=".35"
+            color="#1976d2">
+        </a-sphere>
+
+        <a-triangle
+            position="-.5 .2 0"
+            rotation="0 0 -30"
+            color="#fbc02d">
+        </a-triangle>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- PENGUIN POOL -->
+    <!-- ================================================= -->
+
+    <a-text
+        value="PENGUIN BEACH 🐧"
+        position="15 3 0"
+        align="center"
+        color="white"
+        width="8">
+    </a-text>
+
+    <a-cylinder
+        position="15 .1 2"
+        radius="6"
+        height=".2"
+        color="#62c5e8">
+    </a-cylinder>
+
+    <!-- Penguin -->
+    <a-entity
+        position="15 1.3 2"
+        class="animal"
+        data-name="Penguin"
+        data-description="Penguins are flightless birds adapted to swimming in cold waters.">
+
+        <a-sphere
+            scale=".8 1.2 .6"
+            color="#222">
+        </a-sphere>
+
+        <a-sphere
+            position="0 .7 -.45"
+            scale=".5 .7 .2"
+            color="white">
+        </a-sphere>
+
+        <a-sphere
+            position="0 1.2 -.45"
+            radius=".4"
+            color="#222">
+        </a-sphere>
+
+        <a-cone
+            position="0 1.1 -.8"
+            radius-bottom=".15"
+            height=".4"
+            rotation="90 0 0"
+            color="#f2a900">
+        </a-cone>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- FLAMINGO -->
+    <!-- ================================================= -->
+
+    <a-entity
+        position="-5 2 5"
+        class="animal"
+        data-name="Flamingo"
+        data-description="Flamingos are famous for their pink feathers and long legs.">
+
+        <a-sphere
+            radius=".6"
+            color="#f48fb1">
+        </a-sphere>
+
+        <a-cylinder
+            position="0 1.5 0"
+            radius=".08"
+            height="2.5"
+            color="#e75480">
+        </a-cylinder>
+
+        <a-sphere
+            position="0 2.8 0"
+            radius=".35"
+            color="#f48fb1">
+        </a-sphere>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- FLYING BIRDS -->
+    <!-- ================================================= -->
+
+    <a-entity
+        position="-10 10 -5"
+        animation="property: position; to: 15 11 -5; dur: 7000; loop: true; dir: alternate">
+
+        <a-sphere
+            radius=".3"
+            color="#333">
+        </a-sphere>
+
+        <a-triangle
+            position="-.5 0 0"
+            rotation="0 0 30"
+            color="#333">
+        </a-triangle>
+
+        <a-triangle
+            position=".5 0 0"
+            rotation="0 0 -30"
+            color="#333">
+        </a-triangle>
+
+    </a-entity>
+
+
+    <a-entity
+        position="15 12 10"
+        animation="property: position; to: -15 10 10; dur: 9000; loop: true; dir: alternate">
+
+        <a-sphere
+            radius=".3"
+            color="#444">
+        </a-sphere>
+
+        <a-triangle
+            position="-.5 0 0"
+            rotation="0 0 30"
+            color="#444">
+        </a-triangle>
+
+        <a-triangle
+            position=".5 0 0"
+            rotation="0 0 -30"
+            color="#444">
+        </a-triangle>
+
+    </a-entity>
+
+
+    <!-- ================================================= -->
+    <!-- ZOO SIGN -->
+    <!-- ================================================= -->
+
+    <a-box
+        position="0 4 10"
+        width="12"
+        height="4"
+        depth=".4"
+        color="#784421">
+    </a-box>
+
+    <a-text
+        value="EXPLORE THE WILD"
+        position="0 4 9.75"
+        align="center"
+        width="8"
+        color="#FFD54F">
+    </a-text>
+
+
+    <!-- ================================================= -->
+    <!-- CAMERA -->
+    <!-- ================================================= -->
+
+    <a-entity
+        id="player"
+        position="0 2 8"
+        wasd-controls="acceleration: 20">
+
+        <a-camera
+            look-controls
+            cursor="rayOrigin: mouse">
+        </a-camera>
+
+    </a-entity>
+
+
+    <!-- ========================= -->
+    <!-- SKY -->
+    <!-- ========================= -->
+
+    <a-sky color="#87CEEB"></a-sky>
+
+</a-scene>
+
+
+<script>
+
+    /*
+     * CLICKABLE ANIMALS
+     */
+
+    const animals = document.querySelectorAll(".animal");
+
+    const animalInfo =
+        document.getElementById("animalInfo");
+
+    const animalName =
+        document.getElementById("animalName");
+
+    const animalDescription =
+        document.getElementById("animalDescription");
+
+
+    animals.forEach(animal => {
+
+        animal.addEventListener("click", () => {
+
+            animalName.textContent =
+                animal.dataset.name;
+
+            animalDescription.textContent =
+                animal.dataset.description;
+
+            animalInfo.style.display = "block";
+
+            setTimeout(() => {
+                animalInfo.style.display = "none";
+            }, 5000);
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>
+```

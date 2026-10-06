@@ -1,0 +1,885 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BusCompare — Compare Bus Fares</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Inter, Arial, sans-serif;
+        background: #f5f7fb;
+        color: #172033;
+    }
+
+    /* NAVBAR */
+    nav {
+        height: 70px;
+        background: white;
+        border-bottom: 1px solid #e7eaf0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 6%;
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1769ff;
+    }
+
+    .logo span {
+        color: #172033;
+    }
+
+    nav a {
+        text-decoration: none;
+        color: #606b80;
+        margin-left: 25px;
+        font-size: 14px;
+    }
+
+    /* HERO */
+    .hero {
+        background: linear-gradient(135deg, #1769ff, #614cff);
+        padding: 65px 20px 100px;
+        color: white;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+        margin-bottom: 12px;
+    }
+
+    .hero p {
+        opacity: .9;
+        margin-bottom: 35px;
+    }
+
+    /* SEARCH BOX */
+    .search-box {
+        background: white;
+        max-width: 1100px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 20px 50px rgba(0,0,0,.15);
+        color: #172033;
+        text-align: left;
+    }
+
+    .search-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 1.3fr 1fr .7fr auto;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .field label {
+        display: block;
+        font-size: 12px;
+        color: #737d90;
+        margin-bottom: 7px;
+        font-weight: 600;
+    }
+
+    .field input,
+    .field select {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #dce1ea;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+        background: white;
+    }
+
+    .field input:focus,
+    .field select:focus {
+        border-color: #1769ff;
+    }
+
+    .search-btn {
+        height: 47px;
+        padding: 0 25px;
+        border: 0;
+        border-radius: 10px;
+        background: #1769ff;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .search-btn:hover {
+        background: #0759e8;
+    }
+
+    /* MAIN */
+    .container {
+        max-width: 1100px;
+        margin: -45px auto 60px;
+        padding: 0 20px;
+        position: relative;
+    }
+
+    .results-header {
+        background: white;
+        padding: 18px 20px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        box-shadow: 0 5px 20px rgba(30,40,70,.05);
+    }
+
+    .results-header strong {
+        font-size: 16px;
+    }
+
+    .sort select {
+        padding: 9px 12px;
+        border: 1px solid #dce1ea;
+        border-radius: 8px;
+    }
+
+    /* CONTENT */
+    .content {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 18px;
+    }
+
+    /* FILTER */
+    .filters {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        height: fit-content;
+    }
+
+    .filters h3 {
+        margin-bottom: 18px;
+        font-size: 16px;
+    }
+
+    .filter-group {
+        border-top: 1px solid #edf0f5;
+        padding: 16px 0;
+    }
+
+    .filter-group:first-of-type {
+        border-top: 0;
+    }
+
+    .filter-group h4 {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    .filter-group label {
+        display: block;
+        font-size: 13px;
+        margin: 10px 0;
+        color: #5e687b;
+    }
+
+    .filter-group input {
+        margin-right: 8px;
+    }
+
+    /* BUS CARD */
+    .bus-card {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 13px;
+        box-shadow: 0 5px 20px rgba(30,40,70,.05);
+        transition: .2s;
+    }
+
+    .bus-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(30,40,70,.09);
+    }
+
+    .bus-top {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr 1fr 1fr 120px;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .operator {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .operator-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: #eef4ff;
+        display: grid;
+        place-items: center;
+        color: #1769ff;
+        font-weight: 800;
+    }
+
+    .operator strong {
+        display: block;
+        font-size: 14px;
+    }
+
+    .operator small {
+        color: #7b8494;
+        font-size: 11px;
+    }
+
+    .time strong {
+        font-size: 18px;
+    }
+
+    .time small {
+        display: block;
+        color: #8992a3;
+        margin-top: 3px;
+    }
+
+    .duration {
+        text-align: center;
+        color: #7c8595;
+        font-size: 12px;
+    }
+
+    .duration-line {
+        width: 80px;
+        height: 1px;
+        background: #dfe4eb;
+        margin: 6px auto;
+    }
+
+    .price {
+        text-align: right;
+    }
+
+    .price strong {
+        display: block;
+        font-size: 21px;
+        color: #111827;
+    }
+
+    .price small {
+        color: #8992a3;
+    }
+
+    .book-btn {
+        width: 100%;
+        padding: 11px;
+        border: 0;
+        border-radius: 8px;
+        background: #1769ff;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .book-btn:hover {
+        background: #0759e8;
+    }
+
+    .source {
+        margin-top: 17px;
+        padding-top: 12px;
+        border-top: 1px solid #edf0f5;
+        font-size: 11px;
+        color: #8b94a5;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .source b {
+        color: #1769ff;
+    }
+
+    /* FEATURES */
+    .features {
+        max-width: 1100px;
+        margin: 70px auto;
+        padding: 0 20px;
+    }
+
+    .features h2 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .feature {
+        background: white;
+        padding: 28px;
+        border-radius: 14px;
+        text-align: center;
+    }
+
+    .feature-icon {
+        font-size: 30px;
+        margin-bottom: 12px;
+    }
+
+    .feature h3 {
+        margin-bottom: 8px;
+    }
+
+    .feature p {
+        color: #737d90;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* FOOTER */
+    footer {
+        background: #111827;
+        color: #aeb7c7;
+        padding: 35px 20px;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    /* MOBILE */
+    @media(max-width: 850px) {
+
+        .hero h1 {
+            font-size: 32px;
+        }
+
+        .search-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .search-btn {
+            width: 100%;
+        }
+
+        .content {
+            grid-template-columns: 1fr;
+        }
+
+        .filters {
+            display: none;
+        }
+
+        .bus-top {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .duration {
+            text-align: left;
+        }
+
+        .price {
+            text-align: left;
+        }
+
+        .feature-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media(max-width: 550px) {
+
+        nav {
+            padding: 0 20px;
+        }
+
+        nav div:last-child {
+            display: none;
+        }
+
+        .hero {
+            padding-top: 40px;
+        }
+
+        .search-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bus-top {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .operator {
+            grid-column: span 2;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo">Bus<span>Compare</span></div>
+
+    <div>
+        <a href="#">Flights</a>
+        <a href="#">Hotels</a>
+        <a href="#">Buses</a>
+        <a href="#">Login</a>
+    </div>
+</nav>
+
+
+<!-- HERO -->
+<section class="hero">
+
+    <h1>Compare bus fares in one place</h1>
+
+    <p>
+        Search multiple bus booking platforms and find the best fare.
+    </p>
+
+    <div class="search-box">
+
+        <div class="search-grid">
+
+            <div class="field">
+                <label>FROM</label>
+                <input id="from" type="text" placeholder="e.g. Bangalore">
+            </div>
+
+            <div class="field">
+                <label>TO</label>
+                <input id="to" type="text" placeholder="e.g. Hyderabad">
+            </div>
+
+            <div class="field">
+                <label>TRAVEL DATE</label>
+                <input id="date" type="date">
+            </div>
+
+            <div class="field">
+                <label>PASSENGERS</label>
+                <select id="passengers">
+                    <option>1 Passenger</option>
+                    <option>2 Passengers</option>
+                    <option>3 Passengers</option>
+                    <option>4 Passengers</option>
+                </select>
+            </div>
+
+            <button class="search-btn" onclick="searchBuses()">
+                Search
+            </button>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- RESULTS -->
+<main class="container">
+
+    <div class="results-header">
+
+        <div>
+            <strong id="routeTitle">
+                Bangalore → Hyderabad
+            </strong>
+
+            <span style="color:#8992a3; font-size:13px;">
+                &nbsp; • &nbsp; 24 buses found
+            </span>
+        </div>
+
+        <div class="sort">
+            <select id="sort" onchange="sortResults()">
+                <option value="price">Cheapest</option>
+                <option value="duration">Fastest</option>
+                <option value="departure">Earliest departure</option>
+            </select>
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <!-- FILTERS -->
+        <aside class="filters">
+
+            <h3>Filters</h3>
+
+            <div class="filter-group">
+
+                <h4>Bus type</h4>
+
+                <label>
+                    <input type="checkbox">
+                    AC
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    Sleeper
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    Seater
+                </label>
+
+            </div>
+
+            <div class="filter-group">
+
+                <h4>Departure</h4>
+
+                <label>
+                    <input type="checkbox">
+                    Before 6 AM
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    6 AM - 12 PM
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    12 PM - 6 PM
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    After 6 PM
+                </label>
+
+            </div>
+
+            <div class="filter-group">
+
+                <h4>Price</h4>
+
+                <label>
+                    <input type="checkbox">
+                    Under ₹500
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    ₹500 - ₹1000
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    ₹1000+
+                </label>
+
+            </div>
+
+        </aside>
+
+
+        <!-- RESULTS LIST -->
+        <section id="results"></section>
+
+    </div>
+
+</main>
+
+
+<!-- FEATURES -->
+<section class="features">
+
+    <h2>Why use BusCompare?</h2>
+
+    <div class="feature-grid">
+
+        <div class="feature">
+            <div class="feature-icon">🔎</div>
+            <h3>Search everywhere</h3>
+            <p>
+                Compare buses from multiple booking platforms
+                from one simple search.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">💰</div>
+            <h3>Find cheaper fares</h3>
+            <p>
+                See prices side-by-side and identify the cheapest
+                available option.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Save time</h3>
+            <p>
+                Stop checking different websites manually.
+                Search once and compare.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+    © 2026 BusCompare — Compare bus fares easily.
+</footer>
+
+
+<script>
+
+const buses = [
+
+    {
+        operator: "redBus",
+        logo: "R",
+        departure: "21:30",
+        arrival: "06:15",
+        duration: 525,
+        durationText: "8h 45m",
+        type: "AC Sleeper",
+        price: 649,
+        source: "redBus"
+    },
+
+    {
+        operator: "MakeMyTrip",
+        logo: "M",
+        departure: "22:15",
+        arrival: "06:30",
+        duration: 495,
+        durationText: "8h 15m",
+        type: "AC Sleeper",
+        price: 599,
+        source: "MakeMyTrip"
+    },
+
+    {
+        operator: "AbhiBus",
+        logo: "A",
+        departure: "20:45",
+        arrival: "05:30",
+        duration: 525,
+        durationText: "8h 45m",
+        type: "Volvo AC",
+        price: 729,
+        source: "AbhiBus"
+    },
+
+    {
+        operator: "IntrCity",
+        logo: "I",
+        departure: "23:00",
+        arrival: "06:45",
+        duration: 465,
+        durationText: "7h 45m",
+        type: "AC Sleeper",
+        price: 799,
+        source: "IntrCity"
+    },
+
+    {
+        operator: "Goibibo",
+        logo: "G",
+        departure: "21:00",
+        arrival: "07:00",
+        duration: 600,
+        durationText: "10h",
+        type: "AC Seater",
+        price: 499,
+        source: "Goibibo"
+    }
+
+];
+
+
+function displayBuses(data) {
+
+    const results = document.getElementById("results");
+
+    results.innerHTML = "";
+
+    data.forEach(bus => {
+
+        results.innerHTML += `
+
+        <div class="bus-card">
+
+            <div class="bus-top">
+
+                <div class="operator">
+
+                    <div class="operator-logo">
+                        ${bus.logo}
+                    </div>
+
+                    <div>
+                        <strong>${bus.operator}</strong>
+                        <small>${bus.type}</small>
+                    </div>
+
+                </div>
+
+
+                <div class="time">
+
+                    <strong>${bus.departure}</strong>
+
+                    <small>Bangalore</small>
+
+                </div>
+
+
+                <div class="duration">
+
+                    ${bus.durationText}
+
+                    <div class="duration-line"></div>
+
+                    Direct
+
+                </div>
+
+
+                <div class="time">
+
+                    <strong>${bus.arrival}</strong>
+
+                    <small>Hyderabad</small>
+
+                </div>
+
+
+                <div class="price">
+
+                    <strong>₹${bus.price}</strong>
+
+                    <small>per passenger</small>
+
+                    <button
+                        class="book-btn"
+                        onclick="bookBus('${bus.operator}')">
+
+                        View Deal
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="source">
+
+                <span>
+                    Fare collected from
+                    <b>${bus.source}</b>
+                </span>
+
+                <span>
+                    Updated just now
+                </span>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+
+function searchBuses() {
+
+    const from =
+        document.getElementById("from").value || "Bangalore";
+
+    const to =
+        document.getElementById("to").value || "Hyderabad";
+
+    document.getElementById("routeTitle").innerText =
+        `${from} → ${to}`;
+
+    displayBuses(buses);
+}
+
+
+function sortResults() {
+
+    const sort =
+        document.getElementById("sort").value;
+
+    let sorted = [...buses];
+
+    if (sort === "price") {
+
+        sorted.sort((a,b) =>
+            a.price - b.price
+        );
+
+    }
+
+    if (sort === "duration") {
+
+        sorted.sort((a,b) =>
+            a.duration - b.duration
+        );
+
+    }
+
+    if (sort === "departure") {
+
+        sorted.sort((a,b) =>
+            a.departure.localeCompare(b.departure)
+        );
+
+    }
+
+    displayBuses(sorted);
+}
+
+
+function bookBus(operator) {
+
+    alert(
+        "This would redirect the user to " +
+        operator +
+        " booking page."
+    );
+
+}
+
+
+// Initial results
+displayBuses(buses);
+
+</script>
+
+</body>
+</html>
+```
